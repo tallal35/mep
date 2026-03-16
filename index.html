@@ -3,239 +3,185 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MEP | Neural Access</title>
+    <title>Maryam Event Planner</title>
+    <meta name="theme-color" content="#059669">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="manifest" href="./assets/manifest-DuaE7qh9.json">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com" rel="stylesheet">
-    
+    <script src="https://cdn.sheetjs.com"></script>
     <style>
-        :root {
-            --primary: #10b981;
-            --accent: #3b82f6;
+        body { font-family: 'Inter', sans-serif; }
+        .font-serif { font-family: 'Playfair Display', serif; }
+        
+        .glass-container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
 
-        body { 
-            font-family: 'Plus Jakarta Sans', sans-serif; 
-            background: #020617; 
-            margin: 0;
-            overflow: hidden; 
-            perspective: 2000px;
-            height: 100vh;
-        }
-
-        /* --- FUTURISTIC PLASMA BACKGROUND --- */
-        .plasma-bg {
-            position: fixed;
-            inset: 0;
-            z-index: -1;
-            background: radial-gradient(circle at 50% 50%, #0f172a, #020617);
-            filter: contrast(120%);
-        }
-
-        .orb {
-            position: absolute;
-            width: 600px;
-            height: 600px;
-            border-radius: 50%;
-            filter: blur(100px);
-            opacity: 0.4;
-            transition: all 2s ease-in-out; /* Smooth color transitions */
-            animation: move 10s infinite alternate;
-        }
-
-        @keyframes move {
-            0% { transform: translate(-10%, -10%) scale(1); }
-            100% { transform: translate(20%, 20%) scale(1.2); }
-        }
-
-        /* --- 3D INTERACTIVE CARD --- */
-        .scene {
-            width: 100%;
-            height: 100%;
+        /* Animated Eye Button */
+        .eye-wrapper {
+            width: 24px;
+            height: 24px;
             display: flex;
             align-items: center;
             justify-content: center;
-            transform-style: preserve-3d;
-            transition: transform 1.2s cubic-bezier(0.7, 0, 0.3, 1); /* Zoom effect */
+            cursor: pointer;
+            transition: transform 0.2s ease;
         }
-
-        .glass-card {
-            background: rgba(255, 255, 255, 0.03);
-            backdrop-filter: blur(40px);
-            -webkit-backdrop-filter: blur(40px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 50px;
-            padding: 60px;
-            width: 420px;
-            box-shadow: 0 0 80px rgba(0, 0, 0, 0.5), inset 0 0 20px rgba(255,255,255,0.05);
-            transform-style: preserve-3d;
-            position: relative;
-        }
-
-        /* Animated Eye 3D */
-        .eye-socket {
-            width: 36px;
-            height: 22px;
-            background: rgba(0, 0, 0, 0.3);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-            overflow: hidden;
-            border: 1px solid var(--primary);
-            box-shadow: 0 0 15px rgba(16, 185, 129, 0.3);
-        }
-
-        .pupil {
-            width: 12px;
-            height: 12px;
-            background: var(--primary);
-            border-radius: 50%;
-            box-shadow: 0 0 20px var(--primary);
-            transition: transform 0.1s ease-out;
-        }
-
-        .lid {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            background: #0f172a;
-            transition: transform 0.4s ease;
-            z-index: 2;
-        }
-        .lid-top { top: -100%; }
-        .lid-bottom { bottom: -100%; }
-        .is-closed .lid-top { transform: translateY(100%); }
-        .is-closed .lid-bottom { transform: translateY(-100%); }
-
-        /* Button logic */
+        .eye-wrapper:hover { transform: scale(1.1); }
+        
+        /* Hidden by default button style */
         #enterBtn {
             opacity: 0;
-            transform: translateZ(100px) scale(0.5);
+            transform: translateY(10px);
             pointer-events: none;
-            transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            background: linear-gradient(90deg, var(--primary), var(--accent));
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        #enterBtn.ready {
+        #enterBtn.show {
             opacity: 1;
-            transform: translateZ(100px) scale(1);
+            transform: translateY(0);
             pointer-events: auto;
         }
 
-        /* Space-Zoom Transition */
-        .hyperspace {
-            transform: translateZ(2000px) rotateX(20deg) !important;
-            opacity: 0;
-        }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .animate-fadeIn { animation: fadeIn 0.8s ease-out; }
     </style>
+
+    <link rel="stylesheet" href="/index.css">
+    <script type="importmap">
+    {
+      "imports": {
+        "react/": "https://esm.sh@^19.2.3/",
+        "react": "https://esm.sh@^19.2.3",
+        "react-dom/": "https://esm.sh-dom@^19.2.3/"
+      }
+    }
+    </script>
+    <script type="module" crossorigin src="./assets/index-Bg5jYz3a.js"></script>
 </head>
-<body>
+<body class="bg-slate-50 text-slate-900">
 
-    <!-- Plasma Background -->
-    <div class="plasma-bg">
-        <div id="orb1" class="orb" style="background: var(--primary); top: -10%; left: -10%;"></div>
-        <div id="orb2" class="orb" style="background: var(--accent); bottom: -10%; right: -10%;"></div>
-    </div>
+    <!-- LOGIN SCREEN START -->
+    <div id="loginScreen" class="fixed inset-0 z-[100] flex items-center justify-center transition-opacity duration-1000">
+        <!-- Background Image with Overlay -->
+        <div class="absolute inset-0 bg-cover bg-center z-[-1]" 
+             style="background-image: url('https://images.unsplash.com');">
+            <div class="absolute inset-0 bg-black/40"></div>
+        </div>
 
-    <div id="loginScreen" class="scene">
-        <div class="glass-card" id="card">
-            <div style="transform: translateZ(60px)" class="text-center">
-                <h1 class="text-white/30 text-[10px] tracking-[0.6em] uppercase mb-4">Neural Handshake Required</h1>
-                <h2 class="font-serif text-white text-4xl mb-12 italic tracking-tighter">Maryam Event Planner</h2>
-                
-                <div class="space-y-8">
-                    <!-- Password Field -->
-                    <div class="bg-black/40 border border-white/10 rounded-2xl flex items-center px-6 py-5 focus-within:border-emerald-500/50 transition-all">
-                        <input id="passwordInput" type="password" placeholder="SECURITY KEY" 
-                               oninput="checkVal()"
-                               class="bg-transparent border-none outline-none w-full text-white text-lg placeholder-white/10 tracking-[0.3em]">
-                        
-                        <div onclick="toggleEye()" class="eye-socket" id="eyeWidget">
-                            <div class="lid lid-top"></div>
-                            <div class="pupil" id="pupil"></div>
-                            <div class="lid lid-bottom"></div>
-                        </div>
+        <!-- Glass Login Box -->
+        <div class="glass-container relative w-[340px] p-10 rounded-[2rem] shadow-2xl text-white text-center animate-fadeIn">
+            <h2 class="text-3xl font-serif mb-10 tracking-widest uppercase">Welcome</h2>
+            
+            <div class="space-y-6">
+                <!-- Password Field -->
+                <div class="relative flex items-center border-b border-white/30 pb-2 transition-all focus-within:border-white">
+                    <input id="passwordInput" type="password" placeholder="Enter password" 
+                           oninput="validateRealTime()"
+                           class="bg-transparent border-none outline-none w-full text-lg placeholder-white/50 focus:ring-0">
+                    
+                    <!-- Realistic Eye Button -->
+                    <div onclick="togglePassword()" class="eye-wrapper" id="eyeBtn">
+                        <svg id="eyeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-6 h-6 opacity-70">
+                            <!-- Eye Shape -->
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                            <!-- Pupil -->
+                            <circle id="pupil" cx="12" cy="12" r="3" fill="currentColor"></circle>
+                        </svg>
                     </div>
-
-                    <button id="enterBtn" onclick="initiateLaunch()" 
-                            class="w-full py-5 text-white font-bold rounded-2xl text-lg shadow-[0_20px_50px_rgba(16,185,129,0.3)] hover:brightness-125">
-                        INITIALIZE ACCESS
-                    </button>
                 </div>
+
+                <!-- Remember Me -->
+                <div id="rememberSection" class="flex items-center gap-2 text-sm opacity-60 justify-start transition-opacity">
+                    <input type="checkbox" id="rememberMe" class="w-4 h-4 accent-emerald-500 rounded border-none bg-white/20">
+                    <label for="rememberMe" class="cursor-pointer">Remember me</label>
+                </div>
+
+                <!-- Hidden Login Button (Appears on correct pass) -->
+                <button id="enterBtn" onclick="checkPassword()" 
+                        class="w-full py-4 bg-white text-slate-900 font-bold rounded-full text-lg shadow-xl hover:bg-emerald-50 transition-all active:scale-95">
+                    Unlock App
+                </button>
             </div>
         </div>
     </div>
+    <!-- LOGIN SCREEN END -->
 
     <div id="root"></div>
 
     <script>
-        const KEY = "mep5655";
-        const orb1 = document.getElementById('orb1');
-        const orb2 = document.getElementById('orb2');
-        const card = document.getElementById('card');
-        const pupil = document.getElementById('pupil');
+    const CORRECT_PASS = "mep5655";
 
-        // 1. Dynamic Background Colors (Changes every 2 seconds for futuristic feel)
-        const colors = ['#10b981', '#3b82f6', '#8b5cf6', '#f43f5e', '#06b6d4'];
-        setInterval(() => {
-            const c1 = colors[Math.floor(Math.random() * colors.length)];
-            const c2 = colors[Math.floor(Math.random() * colors.length)];
-            orb1.style.background = c1;
-            orb2.style.background = c2;
-            orb1.style.boxShadow = `0 0 100px ${c1}`;
-            orb2.style.boxShadow = `0 0 100px ${c2}`;
-        }, 2000);
+    // Auto-login if remembered
+    window.onload = () => {
+        if (localStorage.getItem("mep_authorized") === "true") {
+            document.getElementById("loginScreen").style.display = "none";
+        }
+    };
 
-        // 2. 3D Parallax Tilt
-        document.addEventListener('mousemove', (e) => {
-            const x = (window.innerWidth / 2 - e.pageX) / 30;
-            const y = (window.innerHeight / 2 - e.pageY) / 30;
-            card.style.transform = `rotateY(${x}deg) rotateX(${y}deg)`;
+    // Real-time password check to show button
+    function validateRealTime() {
+        const val = document.getElementById("passwordInput").value;
+        const btn = document.getElementById("enterBtn");
+        const remember = document.getElementById("rememberSection");
 
-            const px = (e.pageX / window.innerWidth - 0.5) * 12;
-            const py = (e.pageY / window.innerHeight - 0.5) * 12;
-            pupil.style.transform = `translate(${px}px, ${py}px)`;
+        if (val === CORRECT_PASS) {
+            btn.classList.add("show");
+            remember.style.opacity = "1";
+        } else {
+            btn.classList.remove("show");
+            remember.style.opacity = "0.6";
+        }
+    }
+
+    function togglePassword(){
+        const input = document.getElementById("passwordInput");
+        const pupil = document.getElementById("pupil");
+        const eyeIcon = document.getElementById("eyeIcon");
+
+        if (input.type === "password") {
+            input.type = "text";
+            pupil.setAttribute("fill", "none"); // Realistic "Open" look
+            eyeIcon.style.opacity = "1";
+        } else {
+            input.type = "password";
+            pupil.setAttribute("fill", "currentColor");
+            eyeIcon.style.opacity = "0.7";
+        }
+    }
+
+    // Allow "Enter" key only if password is correct
+    document.getElementById("passwordInput").addEventListener("keypress", (e) => {
+        if (e.key === "Enter" && document.getElementById("passwordInput").value === CORRECT_PASS) {
+            checkPassword();
+        }
+    });
+
+    function checkPassword(){
+        const screen = document.getElementById("loginScreen");
+        const remember = document.getElementById("rememberMe").checked;
+
+        if (remember) {
+            localStorage.setItem("mep_authorized", "true");
+        }
+        
+        // Success Transition
+        screen.style.opacity = "0";
+        setTimeout(() => {
+            screen.style.display = "none";
+        }, 1000);
+    }
+
+    // Service Worker Registration
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('./sw.js').catch(err => console.log('SW registration failed:', err));
         });
-
-        // 3. Real-time Security Validation
-        function checkVal() {
-            const input = document.getElementById('passwordInput');
-            const btn = document.getElementById('enterBtn');
-            btn.classList.toggle('ready', input.value === KEY);
-        }
-
-        function toggleEye() {
-            const input = document.getElementById('passwordInput');
-            const eye = document.getElementById('eyeWidget');
-            input.type = input.type === "password" ? "text" : "password";
-            eye.classList.toggle('is-closed');
-        }
-
-        // 4. Smooth Hyperspace Exit
-        function initiateLaunch() {
-            const scene = document.getElementById('loginScreen');
-            scene.classList.add('hyperspace');
-            
-            // Log access
-            localStorage.setItem('mep_access', 'granted');
-
-            setTimeout(() => {
-                scene.style.display = 'none';
-                // Here is where your main app (id="root") becomes visible
-            }, 1200);
-        }
-
-        // Handle Enter Key
-        document.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter' && document.getElementById('passwordInput').value === KEY) {
-                initiateLaunch();
-            }
-        });
-
-        // Auto-login check
-        if (localStorage.getItem('mep_access') === 'granted') {
-            document.getElementById('loginScreen').style.display = 'none';
-        }
+    }
     </script>
 </body>
 </html>
