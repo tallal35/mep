@@ -3,189 +3,243 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Maryam Event Planner</title>
-    <meta name="theme-color" content="#059669">
-    <link rel="manifest" href="./assets/manifest-DuaE7qh9.json">
+    <title>Maryam Event Planner | Secure Access</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com" rel="stylesheet">
     
     <style>
-        body { font-family: 'Inter', sans-serif; overflow: hidden; }
-        .font-serif { font-family: 'Playfair Display', serif; }
-        
-        /* 3D Glass Container */
-        .glass-container {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(25px);
-            -webkit-backdrop-filter: blur(25px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            transform: perspective(1000px) rotateX(2deg);
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        :root {
+            --primary: #059669;
+            --glass: rgba(255, 255, 255, 0.07);
+            --border: rgba(255, 255, 255, 0.15);
         }
 
-        /* --- 3D EYE ANIMATION --- */
-        .eye-3d {
+        body { 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            background: #020617; 
+            overflow: hidden; 
+            perspective: 1500px;
+        }
+
+        /* 3D Scene Setup */
+        .scene {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transform-style: preserve-3d;
+        }
+
+        /* Floating 3D Card */
+        .glass-card {
+            background: var(--glass);
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
+            border: 1px solid var(--border);
+            border-radius: 40px;
+            padding: 50px;
+            width: 400px;
+            box-shadow: 0 50px 100px -20px rgba(0, 0, 0, 0.7);
+            transform-style: preserve-3d;
+            transition: transform 0.1s ease-out;
             position: relative;
-            width: 30px;
-            height: 18px;
-            background: #fff;
-            border-radius: 50% / 100% 100% 0 0; /* Base shape */
+        }
+
+        /* 3D Floating Elements */
+        .float-layer {
+            transform: translateZ(50px); /* Pushes text forward in 3D space */
+        }
+
+        /* The "Alive" 3D Eye */
+        .eye-socket {
+            width: 34px;
+            height: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+            position: relative;
             display: flex;
             align-items: center;
             justify-content: center;
             overflow: hidden;
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             cursor: pointer;
-            border-radius: 50%;
-            box-shadow: inset 0 0 5px rgba(0,0,0,0.2);
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.3);
+            border: 1px solid rgba(255,255,255,0.1);
         }
 
-        .pupil-3d {
-            width: 10px;
-            height: 10px;
-            background: radial-gradient(circle at 30% 30%, #333, #000);
+        .pupil {
+            width: 12px;
+            height: 12px;
+            background: radial-gradient(circle at 30% 30%, #fff, #34d399);
             border-radius: 50%;
-            transition: transform 0.2s ease-out;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.5);
+            box-shadow: 0 0 15px rgba(52, 211, 153, 0.6);
+            transition: transform 0.1s ease-out;
         }
 
-        .lid {
+        .eyelid {
             position: absolute;
             width: 100%;
-            height: 50%;
-            background: #e2e8f0;
-            left: 0;
-            transition: all 0.4s ease;
-            z-index: 2;
+            height: 100%;
+            background: #1e293b;
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 10;
         }
-        .lid-top { top: 0; transform-origin: top; }
-        .lid-bottom { bottom: 0; transform-origin: bottom; }
+        .eyelid-top { top: -100%; transform: translateY(0); }
+        .eyelid-bottom { bottom: -100%; transform: translateY(0); }
 
-        /* Eye Open State */
-        .eye-open .lid-top { transform: rotateX(110deg); opacity: 0; }
-        .eye-open .lid-bottom { transform: rotateX(-110deg); opacity: 0; }
-        .eye-open .pupil-3d { transform: scale(1.2); }
+        /* Eye closed state */
+        .is-closed .eyelid-top { transform: translateY(100%); }
+        .is-closed .eyelid-bottom { transform: translateY(-100%); }
 
-        /* Button Appearance Logic */
+        /* Futuristic Input */
+        .input-box {
+            background: rgba(0,0,0,0.2);
+            border: 1px solid rgba(255,255,255,0.05);
+            transition: all 0.3s ease;
+        }
+        .input-box:focus-within {
+            border-color: #34d399;
+            background: rgba(0,0,0,0.4);
+            box-shadow: 0 0 20px rgba(5, 150, 105, 0.2);
+        }
+
+        /* Reveal Button Animation */
         #enterBtn {
             opacity: 0;
-            transform: translateY(20px) scale(0.9);
+            transform: translateZ(80px) scale(0.8) translateY(20px);
             pointer-events: none;
-            transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+            transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            background: linear-gradient(135deg, #10b981, #059669);
         }
-        #enterBtn.show {
+        #enterBtn.active {
             opacity: 1;
-            transform: translateY(0) scale(1);
+            transform: translateZ(80px) scale(1) translateY(0);
             pointer-events: auto;
         }
+
+        /* Background Particle Effect (Simplified) */
+        .bg-glow {
+            position: absolute;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(5, 150, 105, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+            filter: blur(80px);
+            pointer-events: none;
+        }
     </style>
-
-    <script type="importmap">
-    {
-      "imports": {
-        "react/": "https://esm.sh@^19.2.3/",
-        "react": "https://esm.sh@^19.2.3",
-        "react-dom/": "https://esm.sh-dom@^19.2.3/"
-      }
-    }
-    </script>
-    <script type="module" crossorigin src="./assets/index-Bg5jYz3a.js"></script>
 </head>
-<body class="bg-slate-900">
+<body>
 
-    <div id="loginScreen" class="fixed inset-0 z-[9999] flex items-center justify-center transition-opacity duration-1000">
-        <!-- Background -->
-        <div class="absolute inset-0 bg-cover bg-center" style="background-image: url('https://images.unsplash.com');">
-            <div class="absolute inset-0 bg-black/40"></div>
-        </div>
+    <div id="loginScreen" class="scene transition-opacity duration-1000">
+        <!-- Ambient Background Lights -->
+        <div class="bg-glow" style="top: -10%; left: -10%;"></div>
+        <div class="bg-glow" style="bottom: -10%; right: -10%;"></div>
 
-        <!-- Login Box -->
-        <div class="glass-container relative w-[350px] p-10 rounded-[2.5rem] text-white text-center">
-            <h2 class="text-3xl font-serif mb-12 tracking-tighter italic">Maryam Event Planner</h2>
-            
-            <div class="space-y-8">
-                <!-- Password Field -->
-                <div class="relative flex items-center border-b border-white/20 pb-3 group focus-within:border-emerald-400 transition-colors">
-                    <input id="passwordInput" type="password" placeholder="Enter password" 
-                           oninput="validatePass()"
-                           class="bg-transparent border-none outline-none w-full text-xl placeholder-white/40 tracking-widest">
-                    
-                    <!-- 3D Eye Button -->
-                    <div onclick="toggleEye()" class="eye-3d" id="eyeWidget">
-                        <div class="lid lid-top"></div>
-                        <div class="pupil-3d"></div>
-                        <div class="lid lid-bottom"></div>
+        <!-- The 3D Card -->
+        <div class="glass-card" id="card">
+            <div class="float-layer text-center">
+                <h1 class="text-white text-xs tracking-[0.4em] uppercase opacity-50 mb-2">Authenticated Access</h1>
+                <h2 class="font-serif text-white text-4xl mb-12 italic">Maryam Event Planner</h2>
+                
+                <div class="space-y-8">
+                    <!-- Password Field -->
+                    <div class="input-box flex items-center px-6 py-4 rounded-2xl">
+                        <input id="passwordInput" type="password" placeholder="Enter Security Key" 
+                               oninput="handleInput()"
+                               class="bg-transparent border-none outline-none w-full text-white text-lg placeholder-white/20 tracking-[0.2em]">
+                        
+                        <!-- 3D Eye Widget -->
+                        <div onclick="toggleSecurityView()" class="eye-socket" id="eye">
+                            <div class="eyelid eyelid-top"></div>
+                            <div class="pupil" id="pupil"></div>
+                            <div class="eyelid eyelid-bottom"></div>
+                        </div>
                     </div>
-                </div>
 
-                <!-- Remember Me -->
-                <div class="flex items-center gap-3 text-sm opacity-60 px-1">
-                    <input type="checkbox" id="rememberMe" class="w-4 h-4 rounded border-none bg-white/20 accent-emerald-500">
-                    <label for="rememberMe" class="cursor-pointer select-none">Remember this device</label>
-                </div>
+                    <!-- Options -->
+                    <div class="flex items-center gap-3 text-white/40 text-sm pl-2">
+                        <input type="checkbox" id="remember" class="w-4 h-4 rounded border-none bg-white/10 accent-emerald-500">
+                        <label for="remember" class="cursor-pointer hover:text-white/60 transition-colors">Trust this workspace</label>
+                    </div>
 
-                <!-- Hidden Success Button -->
-                <button id="enterBtn" onclick="doLogin()" 
-                        class="w-full py-4 bg-emerald-500 text-white font-bold rounded-2xl text-lg shadow-lg hover:bg-emerald-400 hover:-translate-y-1 transition-all active:scale-95">
-                    Enter Dashboard
-                </button>
+                    <!-- Hidden 3D Button -->
+                    <button id="enterBtn" onclick="grantAccess()" 
+                            class="w-full py-4 text-white font-bold rounded-2xl text-lg shadow-[0_20px_40px_rgba(5,150,105,0.4)] hover:brightness-110 active:scale-95">
+                        Initialize Dashboard
+                    </button>
+                </div>
             </div>
         </div>
     </div>
 
+    <!-- Main App Root -->
     <div id="root"></div>
 
     <script>
-    const KEY = "mep5655";
+        const PASS = "mep5655";
+        const card = document.getElementById('card');
+        const pupil = document.getElementById('pupil');
 
-    // Auto-login check
-    if (localStorage.getItem("mep_auth") === "true") {
-        document.getElementById("loginScreen").style.display = "none";
-    }
+        // 1. 3D Tilt Effect
+        document.addEventListener('mousemove', (e) => {
+            const xAxis = (window.innerWidth / 2 - e.pageX) / 25;
+            const yAxis = (window.innerHeight / 2 - e.pageY) / 25;
+            card.style.transform = `rotateY(${xAxis}deg) rotateX(${yAxis}deg)`;
 
-    function validatePass() {
-        const val = document.getElementById("passwordInput").value;
-        const btn = document.getElementById("enterBtn");
-        if (val === KEY) {
-            btn.classList.add("show");
-        } else {
-            btn.classList.remove("show");
+            // Eye Tracking
+            const pupilX = (e.pageX / window.innerWidth - 0.5) * 10;
+            const pupilY = (e.pageY / window.innerHeight - 0.5) * 10;
+            pupil.style.transform = `translate(${pupilX}px, ${pupilY}px)`;
+        });
+
+        // 2. Security Check (Real-time)
+        function handleInput() {
+            const input = document.getElementById('passwordInput');
+            const btn = document.getElementById('enterBtn');
+            if (input.value === PASS) {
+                btn.classList.add('active');
+            } else {
+                btn.classList.remove('active');
+            }
         }
-    }
 
-    function toggleEye() {
-        const input = document.getElementById("passwordInput");
-        const eye = document.getElementById("eyeWidget");
-        
-        if (input.type === "password") {
-            input.type = "text";
-            eye.classList.add("eye-open");
-        } else {
-            input.type = "password";
-            eye.classList.remove("eye-open");
+        // 3. Alive Eye Toggle
+        function toggleSecurityView() {
+            const input = document.getElementById('passwordInput');
+            const eye = document.getElementById('eye');
+            
+            if (input.type === "password") {
+                input.type = "text";
+                eye.classList.add('is-closed');
+            } else {
+                input.type = "password";
+                eye.classList.remove('is-closed');
+            }
         }
-    }
 
-    // Interactive Pupil Movement
-    document.addEventListener('mousemove', (e) => {
-        const pupil = document.querySelector('.pupil-3d');
-        const x = (e.clientX / window.innerWidth - 0.5) * 5;
-        const y = (e.clientY / window.innerHeight - 0.5) * 5;
-        pupil.style.transform = `translate(${x}px, ${y}px)`;
-    });
-
-    document.getElementById("passwordInput").addEventListener("keypress", (e) => {
-        if (e.key === "Enter" && document.getElementById("passwordInput").value === KEY) doLogin();
-    });
-
-    function doLogin() {
-        if (document.getElementById("rememberMe").checked) {
-            localStorage.setItem("mep_auth", "true");
+        // 4. Grant Access
+        function grantAccess() {
+            if (document.getElementById('remember').checked) {
+                localStorage.setItem('mep_session', 'active');
+            }
+            const screen = document.getElementById('loginScreen');
+            screen.style.opacity = '0';
+            screen.style.transform = 'translateZ(500px)'; // Zoom out effect
+            setTimeout(() => screen.style.display = 'none', 1000);
         }
-        const screen = document.getElementById("loginScreen");
-        screen.style.opacity = "0";
-        setTimeout(() => screen.style.display = "none", 1000);
-    }
+
+        // Auto-login check
+        if (localStorage.getItem('mep_session') === 'active') {
+            document.getElementById('loginScreen').style.display = 'none';
+        }
+
+        // Enter Key Support
+        document.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' && document.getElementById('passwordInput').value === PASS) {
+                grantAccess();
+            }
+        });
     </script>
 </body>
 </html>
