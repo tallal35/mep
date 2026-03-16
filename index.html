@@ -5,32 +5,81 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Maryam Event Planner</title>
     <meta name="theme-color" content="#059669">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="manifest" href="./assets/manifest-DuaE7qh9.json">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com" rel="stylesheet">
-    <script src="https://cdn.sheetjs.com"></script>
+    
     <style>
-        body { font-family: 'Inter', sans-serif; }
+        body { font-family: 'Inter', sans-serif; overflow: hidden; }
         .font-serif { font-family: 'Playfair Display', serif; }
         
+        /* 3D Glass Container */
         .glass-container {
             background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
             border: 1px solid rgba(255, 255, 255, 0.2);
+            transform: perspective(1000px) rotateX(2deg);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
         }
 
-        @keyframes fadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
-        .animate-fadeIn { animation: fadeIn 0.5s ease-out; }
-        
-        /* Eye icon hover effect */
-        .eye-icon:hover { opacity: 1; transform: scale(1.1); }
-        .eye-icon { transition: all 0.2s ease; }
+        /* --- 3D EYE ANIMATION --- */
+        .eye-3d {
+            position: relative;
+            width: 30px;
+            height: 18px;
+            background: #fff;
+            border-radius: 50% / 100% 100% 0 0; /* Base shape */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            cursor: pointer;
+            border-radius: 50%;
+            box-shadow: inset 0 0 5px rgba(0,0,0,0.2);
+        }
+
+        .pupil-3d {
+            width: 10px;
+            height: 10px;
+            background: radial-gradient(circle at 30% 30%, #333, #000);
+            border-radius: 50%;
+            transition: transform 0.2s ease-out;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .lid {
+            position: absolute;
+            width: 100%;
+            height: 50%;
+            background: #e2e8f0;
+            left: 0;
+            transition: all 0.4s ease;
+            z-index: 2;
+        }
+        .lid-top { top: 0; transform-origin: top; }
+        .lid-bottom { bottom: 0; transform-origin: bottom; }
+
+        /* Eye Open State */
+        .eye-open .lid-top { transform: rotateX(110deg); opacity: 0; }
+        .eye-open .lid-bottom { transform: rotateX(-110deg); opacity: 0; }
+        .eye-open .pupil-3d { transform: scale(1.2); }
+
+        /* Button Appearance Logic */
+        #enterBtn {
+            opacity: 0;
+            transform: translateY(20px) scale(0.9);
+            pointer-events: none;
+            transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        #enterBtn.show {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+            pointer-events: auto;
+        }
     </style>
 
-    <link rel="stylesheet" href="/index.css">
     <script type="importmap">
     {
       "imports": {
@@ -42,115 +91,100 @@
     </script>
     <script type="module" crossorigin src="./assets/index-Bg5jYz3a.js"></script>
 </head>
-<body class="bg-slate-50 text-slate-900">
+<body class="bg-slate-900">
 
-    <!-- LOGIN SCREEN START -->
-    <div id="loginScreen" class="fixed inset-0 z-[100] flex items-center justify-center transition-opacity duration-700">
-        <!-- Background Image with Overlay -->
-        <div class="absolute inset-0 bg-cover bg-center z-[-1]" 
-             style="background-image: url('https://images.unsplash.com');">
+    <div id="loginScreen" class="fixed inset-0 z-[9999] flex items-center justify-center transition-opacity duration-1000">
+        <!-- Background -->
+        <div class="absolute inset-0 bg-cover bg-center" style="background-image: url('https://images.unsplash.com');">
             <div class="absolute inset-0 bg-black/40"></div>
         </div>
 
-        <!-- Glass Login Box -->
-        <div class="glass-container relative w-[340px] p-10 rounded-3xl shadow-2xl text-white text-center animate-fadeIn">
-            <h2 class="text-3xl font-serif mb-10 tracking-wide">Welcome</h2>
+        <!-- Login Box -->
+        <div class="glass-container relative w-[350px] p-10 rounded-[2.5rem] text-white text-center">
+            <h2 class="text-3xl font-serif mb-12 tracking-tighter italic">Maryam Event Planner</h2>
             
-            <div class="space-y-6">
+            <div class="space-y-8">
                 <!-- Password Field -->
-                <div class="relative flex items-center border-b border-white/40 pb-2">
+                <div class="relative flex items-center border-b border-white/20 pb-3 group focus-within:border-emerald-400 transition-colors">
                     <input id="passwordInput" type="password" placeholder="Enter password" 
-                           class="bg-transparent border-none outline-none w-full text-lg placeholder-white/60 focus:ring-0">
+                           oninput="validatePass()"
+                           class="bg-transparent border-none outline-none w-full text-xl placeholder-white/40 tracking-widest">
                     
-                    <!-- "Alive" Eye Icon SVG -->
-                    <button onclick="togglePassword()" class="eye-icon opacity-70 focus:outline-none" id="eyeBtn">
-                        <svg id="eyeOpen" xmlns="http://www.w3.org" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
-                        <svg id="eyeClosed" class="hidden" xmlns="http://www.w3.org" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>
-                    </button>
+                    <!-- 3D Eye Button -->
+                    <div onclick="toggleEye()" class="eye-3d" id="eyeWidget">
+                        <div class="lid lid-top"></div>
+                        <div class="pupil-3d"></div>
+                        <div class="lid lid-bottom"></div>
+                    </div>
                 </div>
 
-                <!-- Remember Function -->
-                <div class="flex items-center gap-2 text-sm opacity-80 justify-start">
-                    <input type="checkbox" id="rememberMe" class="w-4 h-4 accent-emerald-500 rounded border-none">
-                    <label for="rememberMe" class="cursor-pointer">Keep me logged in</label>
+                <!-- Remember Me -->
+                <div class="flex items-center gap-3 text-sm opacity-60 px-1">
+                    <input type="checkbox" id="rememberMe" class="w-4 h-4 rounded border-none bg-white/20 accent-emerald-500">
+                    <label for="rememberMe" class="cursor-pointer select-none">Remember this device</label>
                 </div>
 
-                <!-- Enter Button -->
-                <button onclick="checkPassword()" 
-                        class="w-full py-3 bg-white text-slate-900 font-bold rounded-full text-lg shadow-lg hover:bg-slate-100 transition-all active:scale-95">
-                    Enter App
+                <!-- Hidden Success Button -->
+                <button id="enterBtn" onclick="doLogin()" 
+                        class="w-full py-4 bg-emerald-500 text-white font-bold rounded-2xl text-lg shadow-lg hover:bg-emerald-400 hover:-translate-y-1 transition-all active:scale-95">
+                    Enter Dashboard
                 </button>
-
-                <!-- Error Message -->
-                <p id="error" class="text-red-300 text-sm hidden animate-pulse">Incorrect password</p>
             </div>
         </div>
     </div>
-    <!-- LOGIN SCREEN END -->
 
     <div id="root"></div>
 
     <script>
-    // Check if user is already remembered
-    window.onload = () => {
-        if (localStorage.getItem("isLoggedIn") === "true") {
-            document.getElementById("loginScreen").style.display = "none";
+    const KEY = "mep5655";
+
+    // Auto-login check
+    if (localStorage.getItem("mep_auth") === "true") {
+        document.getElementById("loginScreen").style.display = "none";
+    }
+
+    function validatePass() {
+        const val = document.getElementById("passwordInput").value;
+        const btn = document.getElementById("enterBtn");
+        if (val === KEY) {
+            btn.classList.add("show");
+        } else {
+            btn.classList.remove("show");
         }
-    };
+    }
 
-    function togglePassword(){
+    function toggleEye() {
         const input = document.getElementById("passwordInput");
-        const eyeOpen = document.getElementById("eyeOpen");
-        const eyeClosed = document.getElementById("eyeClosed");
-
+        const eye = document.getElementById("eyeWidget");
+        
         if (input.type === "password") {
             input.type = "text";
-            eyeOpen.classList.add("hidden");
-            eyeClosed.classList.remove("hidden");
+            eye.classList.add("eye-open");
         } else {
             input.type = "password";
-            eyeOpen.classList.remove("hidden");
-            eyeClosed.classList.add("hidden");
+            eye.classList.remove("eye-open");
         }
     }
 
-    // Allow "Enter" key to submit
-    document.getElementById("passwordInput").addEventListener("keypress", (e) => {
-        if (e.key === "Enter") checkPassword();
+    // Interactive Pupil Movement
+    document.addEventListener('mousemove', (e) => {
+        const pupil = document.querySelector('.pupil-3d');
+        const x = (e.clientX / window.innerWidth - 0.5) * 5;
+        const y = (e.clientY / window.innerHeight - 0.5) * 5;
+        pupil.style.transform = `translate(${x}px, ${y}px)`;
     });
 
-    function checkPassword(){
-        const password = "mep12";
-        const entered = document.getElementById("passwordInput").value;
-        const errorMsg = document.getElementById("error");
-        const screen = document.getElementById("loginScreen");
-        const remember = document.getElementById("rememberMe").checked;
+    document.getElementById("passwordInput").addEventListener("keypress", (e) => {
+        if (e.key === "Enter" && document.getElementById("passwordInput").value === KEY) doLogin();
+    });
 
-        if(entered === password){
-            // Remember function
-            if (remember) {
-                localStorage.setItem("isLoggedIn", "true");
-            }
-            
-            screen.style.opacity = "0";
-            setTimeout(() => {
-                screen.style.display = "none";
-            }, 600);
-        } else {
-            errorMsg.classList.remove("hidden");
-            // Shake effect
-            const box = document.querySelector('.glass-container');
-            box.style.transform = "translateX(8px)";
-            setTimeout(() => box.style.transform = "translateX(-8px)", 80);
-            setTimeout(() => box.style.transform = "translateX(0)", 160);
+    function doLogin() {
+        if (document.getElementById("rememberMe").checked) {
+            localStorage.setItem("mep_auth", "true");
         }
-    }
-
-    // Service Worker Registration
-    if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-          navigator.serviceWorker.register('./sw.js').catch(err => console.log('SW registration failed:', err));
-        });
+        const screen = document.getElementById("loginScreen");
+        screen.style.opacity = "0";
+        setTimeout(() => screen.style.display = "none", 1000);
     }
     </script>
 </body>
