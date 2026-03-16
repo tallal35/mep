@@ -17,22 +17,17 @@
         
         .glass-container {
             background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(15px);
-            -webkit-backdrop-filter: blur(15px);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
             border: 1px solid rgba(255, 255, 255, 0.2);
         }
 
-        .glass-input {
-            background: transparent;
-            border: none;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.4);
-            color: white;
-            outline: none;
-        }
-        .glass-input::placeholder { color: rgba(255, 255, 255, 0.7); }
-
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        .animate-fadeIn { animation: fadeIn 0.4s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+        .animate-fadeIn { animation: fadeIn 0.5s ease-out; }
+        
+        /* Eye icon hover effect */
+        .eye-icon:hover { opacity: 1; transform: scale(1.1); }
+        .eye-icon { transition: all 0.2s ease; }
     </style>
 
     <link rel="stylesheet" href="/index.css">
@@ -50,7 +45,7 @@
 <body class="bg-slate-50 text-slate-900">
 
     <!-- LOGIN SCREEN START -->
-    <div id="loginScreen" class="fixed inset-0 z-[100] flex items-center justify-center transition-opacity duration-500">
+    <div id="loginScreen" class="fixed inset-0 z-[100] flex items-center justify-center transition-opacity duration-700">
         <!-- Background Image with Overlay -->
         <div class="absolute inset-0 bg-cover bg-center z-[-1]" 
              style="background-image: url('https://images.unsplash.com');">
@@ -58,15 +53,26 @@
         </div>
 
         <!-- Glass Login Box -->
-        <div class="glass-container relative w-[340px] p-10 rounded-2xl shadow-2xl text-white text-center animate-fadeIn">
-            <h2 class="text-3xl font-serif mb-10">Welcome</h2>
+        <div class="glass-container relative w-[340px] p-10 rounded-3xl shadow-2xl text-white text-center animate-fadeIn">
+            <h2 class="text-3xl font-serif mb-10 tracking-wide">Welcome</h2>
             
-            <div class="space-y-8">
-                <!-- Password Field Only -->
+            <div class="space-y-6">
+                <!-- Password Field -->
                 <div class="relative flex items-center border-b border-white/40 pb-2">
                     <input id="passwordInput" type="password" placeholder="Enter password" 
-                           class="bg-transparent border-none outline-none w-full text-lg placeholder-white/60">
-                    <span onclick="togglePassword()" class="cursor-pointer opacity-70 ml-2">👁️</span>
+                           class="bg-transparent border-none outline-none w-full text-lg placeholder-white/60 focus:ring-0">
+                    
+                    <!-- "Alive" Eye Icon SVG -->
+                    <button onclick="togglePassword()" class="eye-icon opacity-70 focus:outline-none" id="eyeBtn">
+                        <svg id="eyeOpen" xmlns="http://www.w3.org" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                        <svg id="eyeClosed" class="hidden" xmlns="http://www.w3.org" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>
+                    </button>
+                </div>
+
+                <!-- Remember Function -->
+                <div class="flex items-center gap-2 text-sm opacity-80 justify-start">
+                    <input type="checkbox" id="rememberMe" class="w-4 h-4 accent-emerald-500 rounded border-none">
+                    <label for="rememberMe" class="cursor-pointer">Keep me logged in</label>
                 </div>
 
                 <!-- Enter Button -->
@@ -76,7 +82,7 @@
                 </button>
 
                 <!-- Error Message -->
-                <p id="error" class="text-red-300 text-sm hidden animate-pulse">Wrong password. Try again.</p>
+                <p id="error" class="text-red-300 text-sm hidden animate-pulse">Incorrect password</p>
             </div>
         </div>
     </div>
@@ -85,29 +91,58 @@
     <div id="root"></div>
 
     <script>
+    // Check if user is already remembered
+    window.onload = () => {
+        if (localStorage.getItem("isLoggedIn") === "true") {
+            document.getElementById("loginScreen").style.display = "none";
+        }
+    };
+
     function togglePassword(){
         const input = document.getElementById("passwordInput");
-        input.type = input.type === "password" ? "text" : "password";
+        const eyeOpen = document.getElementById("eyeOpen");
+        const eyeClosed = document.getElementById("eyeClosed");
+
+        if (input.type === "password") {
+            input.type = "text";
+            eyeOpen.classList.add("hidden");
+            eyeClosed.classList.remove("hidden");
+        } else {
+            input.type = "password";
+            eyeOpen.classList.remove("hidden");
+            eyeClosed.classList.add("hidden");
+        }
     }
 
+    // Allow "Enter" key to submit
+    document.getElementById("passwordInput").addEventListener("keypress", (e) => {
+        if (e.key === "Enter") checkPassword();
+    });
+
     function checkPassword(){
-        const password = "mep5655";
+        const password = "mep12";
         const entered = document.getElementById("passwordInput").value;
         const errorMsg = document.getElementById("error");
         const screen = document.getElementById("loginScreen");
+        const remember = document.getElementById("rememberMe").checked;
 
         if(entered === password){
+            // Remember function
+            if (remember) {
+                localStorage.setItem("isLoggedIn", "true");
+            }
+            
             screen.style.opacity = "0";
             setTimeout(() => {
                 screen.style.display = "none";
-            }, 500);
+            }, 600);
         } else {
             errorMsg.classList.remove("hidden");
-            // Simple visual shake for error
+            // Shake effect
             const box = document.querySelector('.glass-container');
-            box.style.transform = "translateX(5px)";
-            setTimeout(() => box.style.transform = "translateX(-5px)", 100);
-            setTimeout(() => box.style.transform = "translateX(0)", 200);
+            box.style.transform = "translateX(8px)";
+            setTimeout(() => box.style.transform = "translateX(-8px)", 80);
+            setTimeout(() => box.style.transform = "translateX(0)", 160);
         }
     }
 
