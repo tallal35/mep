@@ -53,14 +53,39 @@
   <script type="module" crossorigin src="./assets/index-Bg5jYz3a.js"></script>
 </head>
 <body class="bg-slate-50 text-slate-900">
-    <script>
-var password = "mep12";
-var entered = prompt("Enter password to access Maryam Event Planner:");
+    <div id="loginScreen" style="display:flex;align-items:center;justify-content:center;height:100vh;background:#f1f5f9;font-family:Inter,sans-serif;">
+  <div style="background:white;padding:30px;border-radius:12px;width:320px;text-align:center;box-shadow:0 10px 25px rgba(0,0,0,0.1);">
+    <h2 style="margin-bottom:20px;">Maryam Event Planner</h2><div style="position:relative;">
+  <input id="passwordInput" type="password" placeholder="Enter password"
+  style="width:100%;padding:10px;border:1px solid #ccc;border-radius:6px;font-size:16px;">
 
-if (entered !== password) {
-  document.write("<h2 style='text-align:center;margin-top:50px;font-family:sans-serif;'>Access Denied</h2>");
-  document.close();
-  window.stop();
+  <span onclick="togglePassword()" 
+  style="position:absolute;right:10px;top:10px;cursor:pointer;">👁</span>
+</div>
+
+<button onclick="checkPassword()" 
+style="margin-top:15px;width:100%;padding:10px;background:#059669;color:white;border:none;border-radius:6px;font-size:16px;cursor:pointer;">
+Enter
+</button>
+
+<p id="error" style="color:red;margin-top:10px;display:none;">Wrong password</p>
+
+  </div>
+</div><script>
+function togglePassword(){
+  var input = document.getElementById("passwordInput");
+  input.type = input.type === "password" ? "text" : "password";
+}
+
+function checkPassword(){
+  var password = "mep12";
+  var entered = document.getElementById("passwordInput").value;
+
+  if(entered === password){
+    document.getElementById("loginScreen").style.display = "none";
+  } else {
+    document.getElementById("error").style.display = "block";
+  }
 }
 </script>
     <div id="root"></div>
