@@ -87,9 +87,7 @@
                     <!-- Realistic Eye Button -->
                     <div onclick="togglePassword()" class="eye-wrapper" id="eyeBtn">
                         <svg id="eyeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-6 h-6 opacity-70">
-                            <!-- Eye Shape -->
                             <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-                            <!-- Pupil -->
                             <circle id="pupil" cx="12" cy="12" r="3" fill="currentColor"></circle>
                         </svg>
                     </div>
@@ -102,7 +100,7 @@
                 </div>
 
                 <!-- Hidden Login Button (Appears on correct pass) -->
-                <button id="enterBtn" onclick="checkPassword()" 
+                <button id="enterBtn" onclick="unlockTransition()" 
                         class="w-full py-4 bg-white text-slate-900 font-bold rounded-full text-lg shadow-xl hover:bg-emerald-50 transition-all active:scale-95">
                     Unlock App
                 </button>
@@ -114,7 +112,8 @@
     <div id="root"></div>
 
     <script>
-    const CORRECT_PASS = "    ";
+    // --- SET YOUR PASSWORD HERE ---
+    const CORRECT_PASS = "1234"; 
 
     // Auto-login if remembered
     window.onload = () => {
@@ -123,7 +122,7 @@
         }
     };
 
-    // Real-time password check to show button
+    // Real-time password check to trigger automatic login
     function validateRealTime() {
         const val = document.getElementById("passwordInput").value;
         const btn = document.getElementById("enterBtn");
@@ -132,10 +131,34 @@
         if (val === CORRECT_PASS) {
             btn.classList.add("show");
             remember.style.opacity = "1";
+            
+            // AUTOMATIC TRANSITION:
+            // Waits 300ms so the user sees the last character typed before it fades.
+            setTimeout(() => {
+                unlockTransition();
+            }, 300);
+
         } else {
             btn.classList.remove("show");
             remember.style.opacity = "0.6";
         }
+    }
+
+    // This handles the transition and hiding the login screen
+    function unlockTransition(){
+        const screen = document.getElementById("loginScreen");
+        const remember = document.getElementById("rememberMe").checked;
+
+        if (remember) {
+            localStorage.setItem("mep_authorized", "true");
+        }
+        
+        // Start Fade Out Animation
+        screen.style.opacity = "0";
+        setTimeout(() => {
+            screen.style.display = "none";
+            // Once this is gone, the Google Sign-In (React Root) will be visible
+        }, 1000);
     }
 
     function togglePassword(){
@@ -145,7 +168,7 @@
 
         if (input.type === "password") {
             input.type = "text";
-            pupil.setAttribute("fill", "none"); // Realistic "Open" look
+            pupil.setAttribute("fill", "none"); 
             eyeIcon.style.opacity = "1";
         } else {
             input.type = "password";
@@ -154,32 +177,17 @@
         }
     }
 
-    // Allow "Enter" key only if password is correct
+    // Allow "Enter" key fallback
     document.getElementById("passwordInput").addEventListener("keypress", (e) => {
         if (e.key === "Enter" && document.getElementById("passwordInput").value === CORRECT_PASS) {
-            checkPassword();
+            unlockTransition();
         }
     });
-
-    function checkPassword(){
-        const screen = document.getElementById("loginScreen");
-        const remember = document.getElementById("rememberMe").checked;
-
-        if (remember) {
-            localStorage.setItem("mep_authorized", "true");
-        }
-        
-        // Success Transition
-        screen.style.opacity = "0";
-        setTimeout(() => {
-            screen.style.display = "none";
-        }, 1000);
-    }
 
     // Service Worker Registration
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
-          navigator.serviceWorker.register('./sw.js').catch(err => console.log('SW registration failed:', err));
+          navigator.worker.register('./sw.js').catch(err => console.log('SW registration failed:', err));
         });
     }
     </script>
