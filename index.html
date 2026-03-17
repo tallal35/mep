@@ -3,157 +3,127 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Maryam Event Planner | Admin Access</title>
+    <title>Maryam Event Planner | Admin Portal</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com" rel="stylesheet">
     <style>
-        /* Deep Dark Emerald-Black background */
-        body { font-family: 'Inter', sans-serif; background-color: #020617; overflow: hidden; }
-        .font-serif { font-family: 'Playfair Display', serif; }
+        body { font-family: 'Inter', sans-serif; background-color: #0f172a; }
+        .font-serif-italic { font-family: 'Playfair Display', serif; font-style: italic; }
         
-        #loginScreen {
-            background: radial-gradient(circle at center, #022c22 0%, #020617 100%);
-            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        /* Smooth section transitions */
+        .fade-step {
+            transition: all 0.5s ease-in-out;
         }
-
-        .password-input {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            transition: all 0.3s ease;
+        .hidden-step {
+            display: none;
+            opacity: 0;
+            transform: translateY(10px);
         }
-        .password-input:focus {
-            background: rgba(255, 255, 255, 0.08);
-            border-color: rgba(255, 255, 255, 0.3);
-        }
-
-        .social-icon {
-            transition: all 0.3s ease;
-            opacity: 0.4;
-        }
-        .social-icon:hover { 
-            opacity: 1; 
-            transform: translateY(-2px);
-        }
-
-        @keyframes lockPulse {
-            0% { transform: scale(1); opacity: 0.6; }
-            50% { transform: scale(1.05); opacity: 0.9; }
-            100% { transform: scale(1); opacity: 0.6; }
-        }
-        .lock-icon { animation: lockPulse 4s infinite ease-in-out; }
     </style>
 </head>
-<body class="text-slate-200">
+<body class="flex items-center justify-center min-h-screen p-4">
 
-    <!-- LOGIN SCREEN START -->
-    <div id="loginScreen" class="fixed inset-0 z-[999] flex items-center justify-center">
+    <!-- MAIN PORTAL CARD -->
+    <div id="portalCard" class="w-full max-w-[400px] bg-white rounded-[2.5rem] overflow-hidden shadow-2xl animate-fadeIn">
         
-        <!-- Brand Label (Top Left) -->
-        <div class="absolute top-10 left-10 text-[10px] font-bold tracking-[0.3em] uppercase opacity-30">
-            Maryam Event Planner
-        </div>
-
-        <!-- Social Icons + Google Maps (Top Right) -->
-        <div class="absolute top-10 right-10 flex items-center gap-6">
-            <!-- Google Maps Link -->
-            <a href="https://maps.app.goo.gl/tTnqCEA6tfXvVCqGA" target="_blank" class="social-icon" title="Find us on Maps">
-                <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24">
-                    <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z""")/>>
+        <!-- Top Green Section -->
+        <div class="bg-[#059669] p-10 text-center text-white relative">
+            <!-- Building Icon -->
+            <div class="bg-white w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg">
+                <svg class="w-8 h-8 text-[#059669]" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 21v-8.25M15.75 21v-8.25M8.25 21v-8.25M3 9L12 3l9 6v12H3V9z" />
                 </svg>
-            </a>
-            <!-- Instagram (Example) -->
-            <a href="#" class="social-icon">
-                <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24">
-                    <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069z""")/>>
-                </svg>
-            </a>
-        </div>
-
-        <div class="max-w-md w-full px-6 text-center">
-            <!-- Lock Icon -->
-            <div class="mb-10 flex justify-center">
-                <div class="lock-icon bg-white/5 p-7 rounded-full inline-block border border-white/10 shadow-2xl">
-                    <svg xmlns="http://www.w3.org" class="h-14 w-14 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                    </svg>
-                </div>
             </div>
+            
+            <h1 class="text-3xl font-serif-italic mb-2">Maryam Event Planner</h1>
+            <p class="text-[10px] tracking-[0.3em] uppercase opacity-80 font-bold">Administrator Portal</p>
+        </div>
 
-            <!-- Header Text -->
-            <h1 class="text-2xl md:text-3xl font-light mb-3 tracking-tight">
-                Please enter password <br> 
-                <span class="font-serif italic text-white">to view my admin portal</span>
-            </h1>
-            <p class="text-white/20 text-[10px] uppercase tracking-[0.3em] mb-12">Authorized Access Only</p>
-
-            <!-- Form -->
-            <div class="relative max-w-sm mx-auto">
-                <div class="flex flex-col sm:flex-row gap-3">
+        <!-- Bottom White Section -->
+        <div class="p-10 pt-12 pb-14 text-center">
+            
+            <!-- STEP 1: PASSWORD SECTION -->
+            <div id="passwordStep" class="fade-step">
+                <h2 class="text-xl font-bold text-slate-800 mb-2">Security Check</h2>
+                <p class="text-slate-400 text-sm mb-8">Please enter your administrator password.</p>
+                
+                <div class="space-y-4">
                     <input id="passwordInput" type="password" placeholder="Enter password" 
                            oninput="validateRealTime()"
-                           class="password-input w-full px-6 py-4 rounded-2xl outline-none text-white placeholder-white/10 text-center sm:text-left text-sm">
+                           class="w-full px-6 py-4 bg-slate-50 border border-slate-100 rounded-2xl outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all text-center">
                     
-                    <button id="enterBtn" onclick="unlockTransition()"
-                            class="bg-white text-black px-10 py-4 rounded-2xl font-bold hover:bg-slate-200 transition-all active:scale-95 whitespace-nowrap opacity-20 pointer-events-none">
-                        Let's go
+                    <button id="enterBtn" onclick="transitionToGoogle()"
+                            class="w-full py-4 bg-emerald-600 text-white font-bold rounded-2xl opacity-20 pointer-events-none transition-all active:scale-95">
+                        Verify Access
                     </button>
                 </div>
-
-                <p class="mt-10 text-[11px] text-white/30">
-                    Need help? <a href="#" class="text-white/50 hover:text-white underline underline-offset-8 decoration-white/10">Request access</a>
-                </p>
             </div>
+
+            <!-- STEP 2: GOOGLE SIGN-IN SECTION (Hidden initially) -->
+            <div id="googleStep" class="fade-step hidden-step">
+                <h2 class="text-xl font-bold text-[#0f172a] mb-2">Welcome Back</h2>
+                <p class="text-slate-500 text-sm mb-10 leading-relaxed">Sign in with your Google account to <br> manage your events.</p>
+                
+                <button class="w-full py-4 border border-slate-200 rounded-2xl flex items-center justify-center gap-3 font-semibold text-slate-700 hover:bg-slate-50 transition-all active:scale-95 shadow-sm">
+                    <img src="https://www.gstatic.com" class="w-5 h-5" alt="Google">
+                    Sign in with Google
+                </button>
+
+                <p class="mt-12 text-[10px] tracking-widest uppercase text-slate-300 font-bold">Secure Cloud Access</p>
+            </div>
+
         </div>
     </div>
-    <!-- LOGIN SCREEN END -->
-
-    <div id="root"></div>
 
     <script>
-    // --- SET YOUR PASSWORD HERE ---
-    const CORRECT_PASS = "1234"; 
+        // Set your access password here
+        const ACCESS_CODE = "1234";
 
-    window.onload = () => {
-        if (localStorage.getItem("mep_authorized") === "true") {
-            document.getElementById("loginScreen").style.display = "none";
+        function validateRealTime() {
+            const input = document.getElementById('passwordInput');
+            const btn = document.getElementById('enterBtn');
+
+            if (input.value === ACCESS_CODE) {
+                btn.classList.remove('opacity-20', 'pointer-events-none');
+                btn.classList.add('bg-emerald-500', 'shadow-lg', 'shadow-emerald-200');
+                
+                // Automatically transition after 400ms delay
+                setTimeout(transitionToGoogle, 400);
+            } else {
+                btn.classList.add('opacity-20', 'pointer-events-none');
+                btn.classList.remove('bg-emerald-500', 'shadow-lg');
+            }
         }
-    };
 
-    function validateRealTime() {
-        const val = document.getElementById("passwordInput").value;
-        const btn = document.getElementById("enterBtn");
+        function transitionToGoogle() {
+            const pStep = document.getElementById('passwordStep');
+            const gStep = document.getElementById('googleStep');
 
-        if (val === CORRECT_PASS) {
-            btn.classList.remove("opacity-20", "pointer-events-none");
-            btn.classList.add("opacity-100");
+            // 1. Fade out password
+            pStep.style.opacity = "0";
+            pStep.style.transform = "translateY(-10px)";
             
-            // Automatic transition
             setTimeout(() => {
-                unlockTransition();
-            }, 400);
-        } else {
-            btn.classList.add("opacity-20", "pointer-events-none");
-            btn.classList.remove("opacity-100");
+                pStep.style.display = "none";
+                
+                // 2. Prepare Google step
+                gStep.classList.remove('hidden-step');
+                gStep.style.display = "block";
+                
+                // 3. Fade in Google step
+                setTimeout(() => {
+                    gStep.style.opacity = "1";
+                    gStep.style.transform = "translateY(0)";
+                }, 50);
+            }, 500);
         }
-    }
 
-    function unlockTransition(){
-        const screen = document.getElementById("loginScreen");
-        localStorage.setItem("mep_authorized", "true");
-        
-        screen.style.opacity = "0";
-        screen.style.transform = "scale(1.08)";
-        
-        setTimeout(() => {
-            screen.style.display = "none";
-        }, 800);
-    }
-
-    document.getElementById("passwordInput").addEventListener("keypress", (e) => {
-        if (e.key === "Enter" && document.getElementById("passwordInput").value === CORRECT_PASS) {
-            unlockTransition();
-        }
-    });
+        // Support "Enter" key
+        document.getElementById("passwordInput").addEventListener("keypress", (e) => {
+            if (e.key === "Enter" && document.getElementById("passwordInput").value === ACCESS_CODE) {
+                transitionToGoogle();
+            }
+        });
     </script>
 </body>
 </html>
