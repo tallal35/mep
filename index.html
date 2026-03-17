@@ -3,127 +3,193 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Maryam Event Planner | Admin Portal</title>
+    <title>Maryam Event Planner</title>
+    <meta name="theme-color" content="#059669">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="manifest" href="./assets/manifest-DuaE7qh9.json">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com" rel="stylesheet">
+    <script src="https://cdn.sheetjs.com"></script>
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #0f172a; }
-        .font-serif-italic { font-family: 'Playfair Display', serif; font-style: italic; }
+        body { font-family: 'Inter', sans-serif; }
+        .font-serif { font-family: 'Playfair Display', serif; }
         
-        /* Smooth section transitions */
-        .fade-step {
-            transition: all 0.5s ease-in-out;
+        .glass-container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
-        .hidden-step {
-            display: none;
+
+        /* Animated Eye Button */
+        .eye-wrapper {
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+        .eye-wrapper:hover { transform: scale(1.1); }
+        
+        /* Hidden by default button style */
+        #enterBtn {
             opacity: 0;
             transform: translateY(10px);
+            pointer-events: none;
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
         }
-    </style>
-</head>
-<body class="flex items-center justify-center min-h-screen p-4">
+        #enterBtn.show {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: auto;
+        }
 
-    <!-- MAIN PORTAL CARD -->
-    <div id="portalCard" class="w-full max-w-[400px] bg-white rounded-[2.5rem] overflow-hidden shadow-2xl animate-fadeIn">
-        
-        <!-- Top Green Section -->
-        <div class="bg-[#059669] p-10 text-center text-white relative">
-            <!-- Building Icon -->
-            <div class="bg-white w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg">
-                <svg class="w-8 h-8 text-[#059669]" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 21v-8.25M15.75 21v-8.25M8.25 21v-8.25M3 9L12 3l9 6v12H3V9z" />
-                </svg>
-            </div>
-            
-            <h1 class="text-3xl font-serif-italic mb-2">Maryam Event Planner</h1>
-            <p class="text-[10px] tracking-[0.3em] uppercase opacity-80 font-bold">Administrator Portal</p>
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .animate-fadeIn { animation: fadeIn 0.8s ease-out; }
+    </style>
+
+    <link rel="stylesheet" href="/index.css">
+    <script type="importmap">
+    {
+      "imports": {
+        "react/": "https://esm.sh@^19.2.3/",
+        "react": "https://esm.sh@^19.2.3",
+        "react-dom/": "https://esm.sh-dom@^19.2.3/"
+      }
+    }
+    </script>
+    <script type="module" crossorigin src="./assets/index-Bg5jYz3a.js"></script>
+</head>
+<body class="bg-slate-50 text-slate-900">
+
+    <!-- LOGIN SCREEN START -->
+    <div id="loginScreen" class="fixed inset-0 z-[100] flex items-center justify-center transition-opacity duration-1000">
+        <!-- Background Image with Overlay -->
+        <div class="absolute inset-0 bg-cover bg-center z-[-1]" 
+             style="background-image: url('https://images.unsplash.com');">
+            <div class="absolute inset-0 bg-black/40"></div>
         </div>
 
-        <!-- Bottom White Section -->
-        <div class="p-10 pt-12 pb-14 text-center">
+        <!-- Glass Login Box -->
+        <div class="glass-container relative w-[340px] p-10 rounded-[2rem] shadow-2xl text-white text-center animate-fadeIn">
+            <h2 class="text-3xl font-serif mb-10 tracking-widest uppercase">Welcome</h2>
             
-            <!-- STEP 1: PASSWORD SECTION -->
-            <div id="passwordStep" class="fade-step">
-                <h2 class="text-xl font-bold text-slate-800 mb-2">Security Check</h2>
-                <p class="text-slate-400 text-sm mb-8">Please enter your administrator password.</p>
-                
-                <div class="space-y-4">
+            <div class="space-y-6">
+                <!-- Password Field -->
+                <div class="relative flex items-center border-b border-white/30 pb-2 transition-all focus-within:border-white">
                     <input id="passwordInput" type="password" placeholder="Enter password" 
                            oninput="validateRealTime()"
-                           class="w-full px-6 py-4 bg-slate-50 border border-slate-100 rounded-2xl outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all text-center">
+                           class="bg-transparent border-none outline-none w-full text-lg placeholder-white/50 focus:ring-0">
                     
-                    <button id="enterBtn" onclick="transitionToGoogle()"
-                            class="w-full py-4 bg-emerald-600 text-white font-bold rounded-2xl opacity-20 pointer-events-none transition-all active:scale-95">
-                        Verify Access
-                    </button>
+                    <!-- Realistic Eye Button -->
+                    <div onclick="togglePassword()" class="eye-wrapper" id="eyeBtn">
+                        <svg id="eyeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-6 h-6 opacity-70">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                            <circle id="pupil" cx="12" cy="12" r="3" fill="currentColor"></circle>
+                        </svg>
+                    </div>
                 </div>
-            </div>
 
-            <!-- STEP 2: GOOGLE SIGN-IN SECTION (Hidden initially) -->
-            <div id="googleStep" class="fade-step hidden-step">
-                <h2 class="text-xl font-bold text-[#0f172a] mb-2">Welcome Back</h2>
-                <p class="text-slate-500 text-sm mb-10 leading-relaxed">Sign in with your Google account to <br> manage your events.</p>
-                
-                <button class="w-full py-4 border border-slate-200 rounded-2xl flex items-center justify-center gap-3 font-semibold text-slate-700 hover:bg-slate-50 transition-all active:scale-95 shadow-sm">
-                    <img src="https://www.gstatic.com" class="w-5 h-5" alt="Google">
-                    Sign in with Google
+                <!-- Remember Me -->
+                <div id="rememberSection" class="flex items-center gap-2 text-sm opacity-60 justify-start transition-opacity">
+                    <input type="checkbox" id="rememberMe" class="w-4 h-4 accent-emerald-500 rounded border-none bg-white/20">
+                    <label for="rememberMe" class="cursor-pointer">Remember me</label>
+                </div>
+
+                <!-- Hidden Login Button (Appears on correct pass) -->
+                <button id="enterBtn" onclick="unlockTransition()" 
+                        class="w-full py-4 bg-white text-slate-900 font-bold rounded-full text-lg shadow-xl hover:bg-emerald-50 transition-all active:scale-95">
+                    Unlock App
                 </button>
-
-                <p class="mt-12 text-[10px] tracking-widest uppercase text-slate-300 font-bold">Secure Cloud Access</p>
             </div>
-
         </div>
     </div>
+    <!-- LOGIN SCREEN END -->
+
+    <div id="root"></div>
 
     <script>
-        // Set your access password here
-        const ACCESS_CODE = "1234";
+    // --- SET YOUR PASSWORD HERE ---
+    const CORRECT_PASS = "    "; 
 
-        function validateRealTime() {
-            const input = document.getElementById('passwordInput');
-            const btn = document.getElementById('enterBtn');
-
-            if (input.value === ACCESS_CODE) {
-                btn.classList.remove('opacity-20', 'pointer-events-none');
-                btn.classList.add('bg-emerald-500', 'shadow-lg', 'shadow-emerald-200');
-                
-                // Automatically transition after 400ms delay
-                setTimeout(transitionToGoogle, 400);
-            } else {
-                btn.classList.add('opacity-20', 'pointer-events-none');
-                btn.classList.remove('bg-emerald-500', 'shadow-lg');
-            }
+    // Auto-login if remembered
+    window.onload = () => {
+        if (localStorage.getItem("mep_authorized") === "true") {
+            document.getElementById("loginScreen").style.display = "none";
         }
+    };
 
-        function transitionToGoogle() {
-            const pStep = document.getElementById('passwordStep');
-            const gStep = document.getElementById('googleStep');
+    // Real-time password check to trigger automatic login
+    function validateRealTime() {
+        const val = document.getElementById("passwordInput").value;
+        const btn = document.getElementById("enterBtn");
+        const remember = document.getElementById("rememberSection");
 
-            // 1. Fade out password
-            pStep.style.opacity = "0";
-            pStep.style.transform = "translateY(-10px)";
+        if (val === CORRECT_PASS) {
+            btn.classList.add("show");
+            remember.style.opacity = "1";
             
+            // AUTOMATIC TRANSITION:
+            // Waits 300ms so the user sees the last character typed before it fades.
             setTimeout(() => {
-                pStep.style.display = "none";
-                
-                // 2. Prepare Google step
-                gStep.classList.remove('hidden-step');
-                gStep.style.display = "block";
-                
-                // 3. Fade in Google step
-                setTimeout(() => {
-                    gStep.style.opacity = "1";
-                    gStep.style.transform = "translateY(0)";
-                }, 50);
-            }, 500);
-        }
+                unlockTransition();
+            }, 300);
 
-        // Support "Enter" key
-        document.getElementById("passwordInput").addEventListener("keypress", (e) => {
-            if (e.key === "Enter" && document.getElementById("passwordInput").value === ACCESS_CODE) {
-                transitionToGoogle();
-            }
+        } else {
+            btn.classList.remove("show");
+            remember.style.opacity = "0.6";
+        }
+    }
+
+    // This handles the transition and hiding the login screen
+    function unlockTransition(){
+        const screen = document.getElementById("loginScreen");
+        const remember = document.getElementById("rememberMe").checked;
+
+        if (remember) {
+            localStorage.setItem("mep_authorized", "true");
+        }
+        
+        // Start Fade Out Animation
+        screen.style.opacity = "0";
+        setTimeout(() => {
+            screen.style.display = "none";
+            // Once this is gone, the Google Sign-In (React Root) will be visible
+        }, 1000);
+    }
+
+    function togglePassword(){
+        const input = document.getElementById("passwordInput");
+        const pupil = document.getElementById("pupil");
+        const eyeIcon = document.getElementById("eyeIcon");
+
+        if (input.type === "password") {
+            input.type = "text";
+            pupil.setAttribute("fill", "none"); 
+            eyeIcon.style.opacity = "1";
+        } else {
+            input.type = "password";
+            pupil.setAttribute("fill", "currentColor");
+            eyeIcon.style.opacity = "0.7";
+        }
+    }
+
+    // Allow "Enter" key fallback
+    document.getElementById("passwordInput").addEventListener("keypress", (e) => {
+        if (e.key === "Enter" && document.getElementById("passwordInput").value === CORRECT_PASS) {
+            unlockTransition();
+        }
+    });
+
+    // Service Worker Registration
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.worker.register('./sw.js').catch(err => console.log('SW registration failed:', err));
         });
+    }
     </script>
 </body>
 </html>
